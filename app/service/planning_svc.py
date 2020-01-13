@@ -25,9 +25,16 @@ class PlanningService(BasePlanningService):
         link_status = await self._default_link_status(operation)
         links = []
         for index, link in enumerate(links):
-            x = re.compile(r"~`!@#\$%\^&*\(\)-_+=}{]\[|\\\:;'<>?/ \"")
-            if x.search(link):
-                links[index] = re.escape(link)
+            if link.ability.platform == 'linux' or 'darwin':
+                x = re.compile(r'(\s+)(\W+)')
+                if x.search(link):
+                    #links[index] = re.escape(link)
+                    link.command = re.escape(link)
+            else:
+                x = re.compile(r'(\s+)(\W+)')
+                if x.search(link):
+                    re.sub('\\s', '`s')
+                    re.sub('\\W', '`W')
 
         if agent:
             links.extend(await self._generate_and_trim_links(agent, operation, abilities, link_status, trim))
